@@ -1,0 +1,66 @@
+# -*- coding: utf-8 -*-
+
+# les librairies utiles
+
+import numpy as np
+from skimage import feature, color
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import cv2
+
+# on lit l'image
+img = mpimg.imread(r'C:\Users\elyse\OneDrive - USherbrooke\gmq210\PyCharmsProjects\photo.jpg')
+print(img.shape)
+
+image = cv2.imread(r'C:\Users\elyse\OneDrive - USherbrooke\gmq210\PyCharmsProjects\photo.jpg')
+# image2 = cv2.imread(r'C:\Users\elyse\OneDrive - USherbrooke\gmq210\PyCharmsProjects\photo_sapins.jpg')
+
+
+
+# Traitement de l'image
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+plt.imshow(gray, cmap='gray')
+# plt.show()
+
+blur = cv2.GaussianBlur(gray, (11, 11), 0)
+plt.imshow(blur, cmap='gray')
+# plt.show()
+
+
+# ----------------------------------------
+
+# on affiche l'image (une portion)
+subimg = image[200:500, 300:600, :]
+plt.imshow(subimg)
+plt.show()
+
+# on transforme en Niveau de gris
+img_blobs = color.gray2rgb(subimg)
+plt.show()
+
+# on recherche les BLOBS (arbres)
+blobs_dog = [(x[0], x[1], x[2]) for x in feature.blob_log(img_blobs,
+                                                        min_sigma=1,
+                                                        max_sigma=20,
+                                                        threshold=0.29,
+                                                        overlap=0.5)]
+# on enlève les doublons
+blobs_dog = set(blobs_dog)
+
+# le nombre d'arbres
+print(len(blobs_dog))
+
+fig = plt.figure(figsize=(15, 15))
+ax = fig.add_subplot(1, 1, 1)
+# on affiche un cercle rouge à chaque arbre
+for blob in blobs_dog:
+    y, x, r = blob
+    c = plt.Circle((x, y), r, color='red', linewidth=2, fill=False)
+    ax.add_patch(c)
+
+plt.imshow(subimg)
+plt.title('Arbres de Noël')
+
+plt.show()
+
+# ----------------------------------------------
